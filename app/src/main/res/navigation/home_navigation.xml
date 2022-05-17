@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_navigation"
+    app:startDestination="@id/navigation_search">
+
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.mhamdy.movieapp.home.search.SearchFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_movie"
+            app:destination="@id/navigation_movie" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_movie"
+        android:name="com.mhamdy.movieapp.home.movie.MovieFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_movie">
+        <argument
+            android:name="movie_id"
+            app:argType="integer"
+            app:nullable="false" />
+    </fragment>
+
+</navigation>

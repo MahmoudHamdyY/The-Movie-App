@@ -32,19 +32,19 @@ suspend fun MutableList<MoviesCard>.append(
     moviesPage: MoviesPage,
     moviesRepo: MoviesRepo = moviesRepoImp
 ) {
-    val watchListedIds = moviesRepo.getWatchListedMoviesIds()
+    val watchListedIds = runCatching {  moviesRepo.getWatchListedMoviesIds() }.getOrNull()
     var currentYear: Int = if (!isEmpty())
         last { it.movie != null }.movie!!.releaseDate.getYear()
     else
         0
     moviesPage.movies.forEach { movie ->
-        if (movie.releaseDate.getYear() != currentYear) {
+        if (movie.releaseDate.isNotEmpty() && movie.releaseDate.getYear() != currentYear) {
             add(MoviesCard(header = movie.releaseDate.getYear().toString()))
             currentYear = movie.releaseDate.getYear()
         }
         add(
             MoviesCard(
-                movie = movie.apply { watchListed = watchListedIds.contains(movie.id) },
+                movie = movie.apply { watchListed = watchListedIds?.contains(movie.id) },
                 currentPage = moviesPage.page,
                 canLoadMore = moviesPage.page < moviesPage.totalPages
             )

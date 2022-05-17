@@ -14,7 +14,10 @@ data class Movie(
     @SerializedName("backdrop_path") val backdropPath: String?,
     @SerializedName("tagline") val tagline: String?,
     @SerializedName("watch_listed") var watchListed: Boolean?
-) : Serializable
+) : Serializable {
+    fun posterUrl() = "https://image.tmdb.org/t/p/w342${posterPath}"
+    fun backdropUrl() = "https://image.tmdb.org/t/p/w780${backdropPath}"
+}
 
 data class MoviesPage(
     @SerializedName("page") val page: Int,

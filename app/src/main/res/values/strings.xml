@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Movie App</string>
+    <string name="search">search</string>
+    <string name="oops_n_we_can_t_find_movies_with_title">Oops!! \n we can\'t find Movies with title %s</string>
 </resources>

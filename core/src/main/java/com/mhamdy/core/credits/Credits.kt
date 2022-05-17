@@ -15,6 +15,8 @@ data class Person(
     @SerializedName("known_for_department") val department: String,
     @SerializedName("popularity") val popularity: Float,
     @SerializedName("profile_path") val profileImgPath: String?
-) : Serializable
+) : Serializable{
+    fun profileImgUrl() = "https://image.tmdb.org/t/p/w185${profileImgPath}"
+}
 
 data class CreditView(val actors: List<Person>, val directors: List<Person>) : Serializable
