@@ -28,7 +28,7 @@ class SearchAdapter(
                     else
                         false
                 }else{
-                    if(newItem.header != null)
+                    if(oldItem.header != null)
                         newItem.header == oldItem.header
                     else
                         false
@@ -37,6 +37,8 @@ class SearchAdapter(
 
             override fun areContentsTheSame(oldItem: MoviesCard, newItem: MoviesCard): Boolean {
                 return if (oldItem.movie != null) {
+                    if(newItem.movie == null)
+                        return false
                     val oldMovie = oldItem.movie!!
                     val newMovie = newItem.movie!!
                     (oldMovie.id == newMovie.id
