@@ -40,6 +40,12 @@ class SearchFragment : Fragment(), SearchAdapter.MovieSelectListener {
         viewModel.loadMovies()
     }
 
+    override fun onResume() {
+        if (::viewModel.isInitialized)
+            viewModel.updateWatchListed()
+        super.onResume()
+    }
+
     private fun initData() {
         viewModel =
             ViewModelProvider(requireActivity(), SearchViewModel.SearchViewModelFactory()).get(

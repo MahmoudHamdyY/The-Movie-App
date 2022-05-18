@@ -6,4 +6,6 @@ interface MoviesRepo {
     suspend fun searchMovies(query: String, page: Int = 1): MoviesPage
     suspend fun getSimilarMovies(id: Int): MoviesPage
     suspend fun getWatchListedMoviesIds(): List<Int>
+    suspend fun addMovieToWatchList(movie: Movie)
+    suspend fun removeMovieFromWatchList(movie: Movie)
 }

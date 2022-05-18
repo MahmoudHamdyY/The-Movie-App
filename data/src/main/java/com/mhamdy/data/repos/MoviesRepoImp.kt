@@ -6,6 +6,7 @@ import com.mhamdy.core.movies.MoviesPage
 import com.mhamdy.core.movies.MoviesRepo
 import com.mhamdy.data.localdb.AppDatabase
 import com.mhamdy.data.localdb.DatabaseBuilder
+import com.mhamdy.data.localdb.entities.MovieDB
 import com.mhamdy.data.network.Api
 import com.mhamdy.data.network.getApiService
 
@@ -49,6 +50,22 @@ class MoviesRepoImp @CoreIntegrationDsl constructor(
     override suspend fun getWatchListedMoviesIds(): List<Int> {
         return runCatching {
             db.movieDao().getAllMoviesIds()
+        }.getOrElse {
+            throw Exception("Something Went Wrong", it)
+        }
+    }
+
+    override suspend fun addMovieToWatchList(movie: Movie) {
+        runCatching {
+            db.movieDao().insert(MovieDB(movie))
+        }.getOrElse {
+            throw Exception("Something Went Wrong", it)
+        }
+    }
+
+    override suspend fun removeMovieFromWatchList(movie: Movie) {
+        runCatching {
+            db.movieDao().delete(MovieDB(movie))
         }.getOrElse {
             throw Exception("Something Went Wrong", it)
         }

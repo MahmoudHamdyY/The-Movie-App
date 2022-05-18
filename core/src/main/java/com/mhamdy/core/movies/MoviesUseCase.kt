@@ -5,8 +5,12 @@ import com.mhamdy.core.moviesRepoImp
 
 suspend fun getMovie(
     id: Int, moviesRepo: MoviesRepo = moviesRepoImp
-): Movie =
-    moviesRepo.getMovie(id)
+): Movie {
+    val watchListedIds = moviesRepo.getWatchListedMoviesIds()
+    return moviesRepo.getMovie(id).apply {
+        watchListed = watchListedIds.contains(id)
+    }
+}
 
 suspend fun getPopularMovies(
     page: Int = 1, moviesRepo: MoviesRepo = moviesRepoImp
@@ -23,16 +27,31 @@ suspend fun searchMovies(
 suspend fun getSimilarMovies(
     id: Int,
     moviesRepo: MoviesRepo = moviesRepoImp
-): MoviesPage =
+): List<Movie> =
     moviesRepo.getSimilarMovies(id).apply {
         movies = this.movies.take(5)
-    }
+    }.movies
+
+suspend fun addMovieToWatchList(
+    movie: Movie,
+    moviesRepo: MoviesRepo = moviesRepoImp
+) =
+    moviesRepo.addMovieToWatchList(movie.apply { watchListed = true })
+
+suspend fun removeMovieFromWatchList(
+    movie: Movie,
+    moviesRepo: MoviesRepo = moviesRepoImp
+) =
+    moviesRepo.removeMovieFromWatchList(movie)
+
+suspend fun getWatchListedMoviesIds(moviesRepo: MoviesRepo = moviesRepoImp) =
+    moviesRepo.getWatchListedMoviesIds()
 
 suspend fun MutableList<MoviesCard>.append(
     moviesPage: MoviesPage,
     moviesRepo: MoviesRepo = moviesRepoImp
 ) {
-    val watchListedIds = runCatching {  moviesRepo.getWatchListedMoviesIds() }.getOrNull()
+    val watchListedIds = moviesRepo.getWatchListedMoviesIds()
     var currentYear: Int = if (!isEmpty())
         last { it.movie != null }.movie!!.releaseDate.getYear()
     else
@@ -44,7 +63,7 @@ suspend fun MutableList<MoviesCard>.append(
         }
         add(
             MoviesCard(
-                movie = movie.apply { watchListed = watchListedIds?.contains(movie.id) },
+                movie = movie.apply { watchListed = watchListedIds.contains(movie.id) },
                 currentPage = moviesPage.page,
                 canLoadMore = moviesPage.page < moviesPage.totalPages
             )

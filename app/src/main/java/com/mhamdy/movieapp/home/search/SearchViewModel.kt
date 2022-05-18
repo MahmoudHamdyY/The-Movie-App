@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.mhamdy.core.movies.*
 import com.mhamdy.movieapp.helpers.SingleLiveData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -13,7 +14,8 @@ class SearchViewModel(
     val cards: MutableLiveData<MutableList<MoviesCard>> = MutableLiveData(mutableListOf()),
     val error: SingleLiveData<Throwable> = SingleLiveData(),
     val popularMovies: suspend (p: Int) -> MoviesPage = { getPopularMovies(it) },
-    val searchMovie: suspend (q: String, p: Int) -> MoviesPage = { q, p -> searchMovies(q, p) }
+    val searchMovie: suspend (q: String, p: Int) -> MoviesPage = { q, p -> searchMovies(q, p) },
+    val loadWatchListedIds: suspend () -> List<Int> = { getWatchListedMoviesIds() }
 ) : ViewModel() {
     private var currentPage = 0
     private var canLoadMore = true
@@ -33,9 +35,24 @@ class SearchViewModel(
             loadSearchMovies(query)
     }
 
+    fun updateWatchListed() {
+        viewModelScope.launch(Dispatchers.IO) {
+            loading.postValue(true)
+            runCatching {
+                loadWatchListedIds()
+            }.onSuccess { ids ->
+                loading.postValue(false)
+                cards.postValue(cards.value?.onEach { movieCard ->
+                    if (movieCard.movie != null)
+                        movieCard.movie!!.watchListed = ids.contains(movieCard.movie?.id)
+                })
+            }
+        }
+    }
+
     private fun loadPopularMovies() {
-        viewModelScope.launch {
-            loading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            loading.postValue(true)
             runCatching {
                 popularMovies(currentPage + 1)
             }.onSuccess { moviePage ->
@@ -45,21 +62,21 @@ class SearchViewModel(
                     currentPage = moviePage.page
                     canLoadMore = (moviePage.page < moviePage.totalPages)
                 }.onSuccess {
-                    loading.value = false
+                    loading.postValue(false)
                 }.onFailure {
-                    loading.value = false
-                    error.value = it
+                    loading.postValue(false)
+                    error.postValue(it)
                 }
             }.onFailure {
-                loading.value = false
-                error.value = it
+                loading.postValue(false)
+                error.postValue(it)
             }
         }
     }
 
     private fun loadSearchMovies(query: String) {
-        viewModelScope.launch {
-            loading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            loading.postValue(true)
             runCatching {
                 searchMovie(query, currentPage + 1)
             }.onSuccess { moviePage ->
@@ -69,14 +86,14 @@ class SearchViewModel(
                     currentPage = moviePage.page
                     canLoadMore = (moviePage.page < moviePage.totalPages)
                 }.onSuccess {
-                    loading.value = false
+                    loading.postValue(false)
                 }.onFailure {
-                    loading.value = false
-                    error.value = it
+                    loading.postValue(false)
+                    error.postValue(it)
                 }
             }.onFailure {
-                loading.value = false
-                error.value = it
+                loading.postValue(false)
+                error.postValue(it)
             }
         }
     }

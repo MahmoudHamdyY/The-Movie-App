@@ -15,5 +15,5 @@ suspend fun getMoviesCredits(ids: List<Int>, creditRepo: CreditRepo = creditRepo
     actors.sortByDescending { it.popularity }
     directors.sortByDescending { it.popularity }
 
-    return CreditView(actors.take(5), directors.take(5))
+    return CreditView(actors.distinctBy { it.id }.take(5), directors.distinctBy { it.id }.take(5))
 }
