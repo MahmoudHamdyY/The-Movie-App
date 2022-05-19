@@ -18,7 +18,7 @@ class SearchViewModel(
     val searchMovie: suspend (q: String, p: Int) -> MoviesPage = { q, p -> searchMovies(q, p) },
     val loadWatchListedIds: suspend () -> List<Int> = { getWatchListedMoviesIds() },
     val appendMovies: suspend MutableList<MoviesCard>.(moviesPage: MoviesPage) -> Unit = { append(it) },
-    val coroutineIoDispatcher: CoroutineDispatcher = Dispatchers.IO
+    val coroutineIoDispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : ViewModel() {
     private var currentPage = 0
     private var canLoadMore = true

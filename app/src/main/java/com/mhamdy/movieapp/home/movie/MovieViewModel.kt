@@ -8,7 +8,6 @@ import com.mhamdy.core.credits.CreditView
 import com.mhamdy.core.credits.getMoviesCredits
 import com.mhamdy.core.movies.*
 import com.mhamdy.movieapp.helpers.SingleLiveData
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MovieViewModel(
@@ -30,7 +29,7 @@ class MovieViewModel(
     }
 
     fun addToWatchList() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             loading.postValue(true)
             runCatching {
                 setMovieToWatchListed(movie.value!!)
@@ -45,7 +44,7 @@ class MovieViewModel(
     }
 
     fun removeWatchListed() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             loading.postValue(true)
             runCatching {
                 removeMovieFromWatchListed(movie.value!!)
@@ -60,7 +59,7 @@ class MovieViewModel(
     }
 
     private fun loadMovie(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             loading.postValue(true)
             runCatching {
                 findMovie(id)

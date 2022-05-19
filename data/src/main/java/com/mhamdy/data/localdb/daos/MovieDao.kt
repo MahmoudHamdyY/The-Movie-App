@@ -6,17 +6,17 @@ import com.mhamdy.data.localdb.entities.MovieDB
 @Dao
 interface MovieDao {
     @Query("SELECT * FROM movies")
-    abstract fun getAllMovies(): List<MovieDB>
+    abstract suspend fun getAllMovies(): List<MovieDB>
 
     @Query("SELECT id FROM movies")
-    abstract fun getAllMoviesIds(): List<Int>
+    abstract suspend fun getAllMoviesIds(): List<Int>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(movie: MovieDB)
+    abstract suspend fun insert(movie: MovieDB)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(movie: List<MovieDB>)
+    abstract suspend fun insert(movie: List<MovieDB>)
 
     @Delete
-    abstract fun delete(movie: MovieDB)
+    abstract suspend fun delete(movie: MovieDB)
 }
